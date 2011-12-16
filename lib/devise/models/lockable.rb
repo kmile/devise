@@ -143,6 +143,14 @@ module Devise
           [:both, strategy].include?(self.unlock_strategy)
         end
 
+        # Is the user locked?
+        def is_locked?(attributes={})
+          return unless authentication_keys.all? { |k| attributes[k].present? }
+          conditions = attributes.slice(*authentication_keys)
+          resource = find_for_authentication(conditions)
+          resource.access_locked?
+        end
+
         Devise::Models.config(self, :maximum_attempts, :unlock_strategy, :unlock_in)
       end
     end

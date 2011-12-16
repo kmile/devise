@@ -13,6 +13,13 @@ module Devise
       # success and the authenticated user if everything is okay. Otherwise redirect
       # to sign in page.
       def authenticate!
+        if mapping.to.respond_to?(:is_locked?)
+          if mapping.to.is_locked?(params[scope])
+            fail(:locked)
+            return
+          end
+        end
+
         if resource = mapping.to.authenticate(params[scope])
           success!(resource)
         else
